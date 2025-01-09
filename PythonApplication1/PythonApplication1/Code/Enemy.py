@@ -10,3 +10,6 @@
 
     def Attaque(self, player):
         player.life -= self.attaquePower
+        if player.life <= 0 :
+            player.emoji = '💀'
+            quit

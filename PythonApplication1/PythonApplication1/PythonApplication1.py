@@ -1,7 +1,7 @@
 ﻿import time
 from Code.Player import Player
 from Code.Enemy import Enemy
-from Code.ForcePotion import ForcePotion
+from Code.HealPotion import HealPotion
 
 def main():
     fighting = False
@@ -17,28 +17,31 @@ def main():
     "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
     ]
 
-    player = Player(name = "Wizard", x = 15, y = 3, life = 100, attaquePower = 20, healPower = 20, emoji = "🧙‍♂️")
+    player = Player(name = "Wizard", x = 15, y = 3, life = 100, attaquePower = 20, numberOfpotion = 0, emoji = "🧙‍♂️")
     enemy = Enemy(name = "Dragon", x = 35, y = 3, life = 100, attaquePower = 20, emoji = "🐉")
-    potion = ForcePotion(x = 3, y = 3, puissance = 5, emoji='🧪')
+    potion = HealPotion(x = 3, y = 3, puissance = 25, emoji='🧪')
+    
+    #potion = [HealPotion(x = 3, y = 3, puissance = 25, emoji='🧪'), HealPotion(x = 11, y = 3, puissance = 25, emoji='🧪')]
 
     while  True :
 
         carte_temp = [list(ligne) for ligne in map]
         carte_temp[enemy.y][enemy.x] = enemy.emoji
         carte_temp[potion.y][potion.x] = potion.emoji
+        #for i in potion :
+            #carte_temp[potion[i].y][potion[i].x] = potion[i].emoji
         carte_temp[player.y][player.x] = player.emoji
 
         carte_à_afficher = ["".join(ligne) for ligne in carte_temp]
         DrawMap(carte_à_afficher)
 
-        if player.x >= 65 :
-            break
+        if player.x >= 60 :
             print("you WIN")
+            time.sleep(3)
+            break
 
-        #if player.x == potion.x :
-        #    potion.ApplyEffects(player)
-        #    player.emoji = '🧙‍♀️'
-        #faire en sorte que sans la potion on puisse pas ce heal
+        if player.x == potion.x :
+            player.numberOfpotion += 1
 
         if fighting == False :
 
@@ -56,27 +59,26 @@ def main():
 
         elif fighting == True :
             
-            print(player.life, enemy.life)
+            print(f"player life :  {player.life} / enemy life :  {enemy.life}")
+            print(f"player attaque power : {player.attaquePower} / player heal potions : {player.numberOfpotion}")
 
             if IsWizardTurn == True :
-                attaque = input("attaquer l'enemie ( e = attaque, r = heal) : ").lower()
+                if player.numberOfpotion > 0 :
+                    attaque = input("sorts disponibles ( e : attaque, r : heal) : ").lower()
+                else :
+                    attaque = input("sorts disponibles ( e : attaque )").lower()
                 
                 if attaque == 'e' :
                     player.Attaque(enemy)
-                    if enemy.life <= 0 :
-                        enemy.IsAlive = False
-                        enemy.emoji = '💀'
+                    if enemy.IsAlive == False :
                         fighting = False
                     IsWizardTurn = False
-                elif attaque == 'r' :
-                    player.Heal()
+                elif attaque == 'r' and player.numberOfpotion > 0 :
+                    potion.Heal(player)
                     IsWizardTurn = False
 
             elif IsWizardTurn == False :
                 enemy.Attaque(player)
-                if player.life <= 0 :
-                    player.emoji = '💀'
-                    break
                 IsWizardTurn = True
                 
                 print("enemy attacking...")

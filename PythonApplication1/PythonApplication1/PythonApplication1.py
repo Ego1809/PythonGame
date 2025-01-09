@@ -17,19 +17,20 @@ def main():
     "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
     ]
 
-    player = Player(name = "Wizard", x = 15, y = 3, life = 100, attaquePower = 20, numberOfpotion = 0, emoji = "🧙‍♂️")
-    enemy = Enemy(name = "Dragon", x = 35, y = 3, life = 100, attaquePower = 20, emoji = "🐉")
-    potion = HealPotion(x = 3, y = 3, puissance = 25, emoji='🧪')
-    
-    #potion = [HealPotion(x = 3, y = 3, puissance = 25, emoji='🧪'), HealPotion(x = 11, y = 3, puissance = 25, emoji='🧪')]
+    player = Player(name = "Wizard", x = 15, y = 3, life = 100, attaquePower = 20, numberOfpotion = 0, healPower = 30, emoji = "🧙‍♂️")
+    enemy = Enemy(name = "Dragon", x = 35, y = 3, life = 100, attaquePower = 25, emoji = "🐉")
+    potions = [
+        HealPotion(x=3, y=3, emoji='🧪'),
+        HealPotion(x=11, y=3, emoji='🧪'),
+        HealPotion(x=7, y=3, emoji='🧪')
+    ]
 
     while  True :
 
         carte_temp = [list(ligne) for ligne in map]
         carte_temp[enemy.y][enemy.x] = enemy.emoji
-        carte_temp[potion.y][potion.x] = potion.emoji
-        #for i in potion :
-            #carte_temp[potion[i].y][potion[i].x] = potion[i].emoji
+        for potion in potions:
+            carte_temp[potion.y][potion.x] = potion.emoji
         carte_temp[player.y][player.x] = player.emoji
 
         carte_à_afficher = ["".join(ligne) for ligne in carte_temp]
@@ -40,8 +41,10 @@ def main():
             time.sleep(3)
             break
 
-        if player.x == potion.x :
-            player.numberOfpotion += 1
+        for potion in potions[:]: 
+            if player.x == potion.x and player.y == potion.y:
+                player.numberOfpotion += 1
+                potions.remove(potion)
 
         if fighting == False :
 
@@ -63,7 +66,7 @@ def main():
             print(f"player attaque power : {player.attaquePower} / player heal potions : {player.numberOfpotion}")
 
             if IsWizardTurn == True :
-                if player.numberOfpotion > 0 :
+                if player.numberOfpotion > 0 and player.life != player.maxLife:
                     attaque = input("sorts disponibles ( e : attaque, r : heal) : ").lower()
                 else :
                     attaque = input("sorts disponibles ( e : attaque )").lower()
@@ -73,8 +76,8 @@ def main():
                     if enemy.IsAlive == False :
                         fighting = False
                     IsWizardTurn = False
-                elif attaque == 'r' and player.numberOfpotion > 0 :
-                    potion.Heal(player)
+                elif attaque == 'r' and player.numberOfpotion > 0 and player.life != player.maxLife:
+                    player.Heal()
                     IsWizardTurn = False
 
             elif IsWizardTurn == False :

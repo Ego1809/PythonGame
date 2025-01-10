@@ -1,15 +1,23 @@
 ﻿class Enemy:
-    def __init__(self, name, x=0, y=0, life=0, attaquePower=0, emoji="🐉"):
-        self.name = name
+    def __init__(self, x=0, y=0, life=0, attackPower=0, emoji="🐍"):
         self.x = x
         self.y = y
         self.life = life
-        self.attaquePower = attaquePower
+        self.maxLife = life
+        self.attackPower = attackPower
+        self.lifeSteal = 0
         self.emoji = emoji
         self.IsAlive = True
+        self.hasEvelved = False
 
-    def Attaque(self, player):
-        player.life -= self.attaquePower
-        if player.life <= 0 :
-            player.emoji = '💀'
-            quit
+    def Attack(self, player):
+        if self.life < self.maxLife / 2 and self.hasEvelved == False:
+            self.Evolve()
+        
+        player.life -= self.attackPower + self.lifeSteal
+        self.life += self.lifeSteal
+
+    def Evolve(self):
+        self.emoji = '🐉'
+        self.lifeSteal += 2
+        self.hasEvelved = True

@@ -74,7 +74,7 @@ def main():
             #deplacement and save
             direction = input("Déplacez le joueur ( S = gauche, D = droite, save = save this game) : ").lower()
             if direction == 'save':
-                save_game(player, enemy, potions, gameMap, fighting, IsWizardTurn)
+                save_game(player, enemy, potions, gameMap, fighting, IsItPlayerTurn)
             elif direction == 's' and player.x > 1:
                 player.x -= 2
             elif direction == 'd' and player.x < len(gameMap[0]) - 4:

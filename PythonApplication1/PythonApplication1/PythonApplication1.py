@@ -1,39 +1,59 @@
-﻿import time
+﻿import json
+import time
+import os
 from Code.Player import Player
 from Code.Enemy import Enemy
 from Code.HealPotion import HealPotion
 from Code.WinDestination import WinDestination
 
 def main():
-    fighting = False
-    IsItPlayerTurn = True
+    if os.path.exists("save_game.json"):
+        choice = input("A backup exists. Do you want to delete it and start a new game? ? (y/n) : ").lower()
+        if choice == 'y':
+            os.remove("save_game.json")
+            print("Save deleted. A new game begins.")
+            time.sleep(3)
+        else:
+            print("Loading the save...")
+            time.sleep(3)
+    
+    loaded_game = load_game() if os.path.exists("save_game.json") else None
+    if loaded_game:
+        #load old game
+        player, enemy, potions, gameMap, fighting, IsItPlayerTurn = loaded_game
+    else:
+        #creat new game
+        fighting = False
+        IsItPlayerTurn = True
+        gameMap = [
+        "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+        "~    🌲🌲       🌳🌳       🗻🗻🗻🗻🗻🗻         🌾🌾🌲🌲🌳   🌾🌾🌾🏡  ~",
+        "~🌲🌲🌳     🌳           🗻🗻   🗻  🌲🗻    🌲              🌾🌾🌾🏘️🏡 ~",
+        "~                                                              ~",
+        "~      🌲🌳🌳    🌳🌳🌲        🗻🗻🗻🗻     🌲🌲🌳         🌾🌾 🌾🌾🏘️ ~",
+        "~  🌲🌲🌳🌳     🌲🌲🌳🌳🌳     🗻        🌳🌳       🌳🌳🌳     🌾🏡🌾🏡~",
+        "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+        ]
 
-    map = [
-    "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
-    "~    🌲🌲       🌳🌳       🗻🗻🗻🗻🗻🗻         🌾🌾🌲🌲🌳   🌾🌾🌾🏡  ~",
-    "~🌲🌲🌳     🌳           🗻🗻   🗻  🌲🗻    🌲              🌾🌾🌾🏘️🏡 ~",
-    "~                                                              ~",
-    "~      🌲🌳🌳    🌳🌳🌲        🗻🗻🗻🗻     🌲🌲🌳         🌾🌾 🌾🌾🏘️ ~",
-    "~  🌲🌲🌳🌳     🌲🌲🌳🌳🌳     🗻        🌳🌳       🌳🌳🌳     🌾🏡🌾🏡~",
-    "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-    ]
+        player = Player(x = 15, y = 3, life = 100, attackPower = 20, numberOfpotion = 0, healPower = 30, emoji = "🧙‍♂️")
+        enemy = Enemy(x = 35, y = 3, life = 100, attackPower = 25, emoji = "🐍")
+        potions = [
+            HealPotion(x = 3, y = 3, emoji = '🧪'),
+            HealPotion(x = 11, y = 3, emoji = '🧪'),
+            HealPotion(x = 7, y = 3, emoji = '🧪')
+        ]
 
-    player = Player(x = 15, y = 3, life = 100, attackPower = 20, numberOfpotion = 0, healPower = 30, emoji = "🧙‍♂️")
-    enemy = Enemy(x = 35, y = 3, life = 100, attackPower = 25, emoji = "🐍")
-    potions = [
-        HealPotion(x = 3, y = 3, emoji = '🧪'),
-        HealPotion(x = 11, y = 3, emoji = '🧪'),
-        HealPotion(x = 7, y = 3, emoji = '🧪')
-    ]
     castel = WinDestination(x = 60, y = 3, emoji = '🏫')
 
     while  True :
 
-        DrawMap(map, potions, enemy, castel, player)
+        DrawMap(gameMap, potions, enemy, castel, player)
 
         #win trigger
         if player.x >= castel.x :
             print("you WIN")
+            if os.path.exists("save_game.json"):
+                os.remove("save_game.json")
             time.sleep(3)
             break
         
@@ -51,11 +71,17 @@ def main():
 
         if fighting == False :
 
-            #deplacement
-            player.Move( enemy, map)
+            #deplacement and save
+            direction = input("Déplacez le joueur ( S = gauche, D = droite, save = save this game) : ").lower()
+            if direction == 'save':
+                save_game(player, enemy, potions, gameMap, fighting, IsWizardTurn)
+            elif direction == 's' and player.x > 1:
+                player.x -= 2
+            elif direction == 'd' and player.x < len(gameMap[0]) - 4:
+                player.x += 2
             
             #enemy detection
-            if player.x == enemy.x - 2 and enemy.IsAlive == True :
+            if player.x == enemy.x - 2 and enemy.isAlive == True :
                     fighting = True
 
         elif fighting == True :
@@ -79,7 +105,7 @@ def main():
                                 
                 if attaque == 'e' :
                     player.Attack(enemy)
-                    if enemy.IsAlive == False :
+                    if enemy.isAlive == False :
                         fighting = False
                     IsItPlayerTurn = False
                 elif attaque == 'r' and player.numberOfpotion > 0 and player.life != player.maxLife:
@@ -97,9 +123,40 @@ def main():
                 time.sleep(3)
 
 
-def DrawMap(map, potions, enemy, castel, player):
+def save_game(player, enemy, potions, gameMap, fighting, IsItPlayerTurn):
+    game_state = {
+        "player": player.to_dict(),
+        "enemy": enemy.to_dict(),
+        "potions": [potion.to_dict() for potion in potions],
+        "gameMap": gameMap,
+        "fighting": fighting,
+        "IsItPlayerTurn": IsItPlayerTurn,
+    }
+    with open("save_game.json", "w") as file:
+        json.dump(game_state, file, indent=4)
+    print("Jeu sauvegardé avec succès !")
+
+
+def load_game():
+    try:
+        with open("save_game.json", "r") as file:
+            game_state = json.load(file)
+        player = Player.from_dict(game_state["player"])
+        enemy = Enemy.from_dict(game_state["enemy"])
+        potions = [HealPotion.from_dict(p) for p in game_state["potions"]]
+        gameMap = game_state["gameMap"]
+        fighting = game_state["fighting"]
+        IsItPlayerTurn = game_state["IsItPlayerTurn"]
+        print("Jeu chargé avec succès !")
+        return player, enemy, potions, gameMap, fighting, IsItPlayerTurn
+    except FileNotFoundError:
+        print("Aucune sauvegarde trouvée. Une nouvelle partie commence.")
+        return None
+
+
+def DrawMap(gameMap, potions, enemy, castel, player):
     #add all objets to the map before drawing
-    carte_temp = [list(ligne) for ligne in map]
+    carte_temp = [list(ligne) for ligne in gameMap]
     carte_temp[castel.y][castel.x] = castel.emoji
     for potion in potions:
         carte_temp[potion.y][potion.x] = potion.emoji

@@ -1,0 +1,38 @@
+{
+    "player": {
+        "x": 3,
+        "y": 3,
+        "life": 100,
+        "maxLife": 100,
+        "attackPower": 20,
+        "luckMultiplier": 1,
+        "canTrowDice": true,
+        "numberOfpotion": 3,
+        "healPower": 30,
+        "emoji": "\ud83e\uddd9\u200d\u2642\ufe0f",
+        "level": 1
+    },
+    "enemy": {
+        "x": 35,
+        "y": 3,
+        "life": 100,
+        "maxLife": 100,
+        "attackPower": 25,
+        "lifeSteal": 2,
+        "emoji": "\ud83d\udc0d",
+        "IsAlive": true,
+        "hasEvelved": false
+    },
+    "potions": [],
+    "gameMap": [
+        "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+        "~    \ud83c\udf32\ud83c\udf32       \ud83c\udf33\ud83c\udf33       \ud83d\uddfb\ud83d\uddfb\ud83d\uddfb\ud83d\uddfb\ud83d\uddfb\ud83d\uddfb         \ud83c\udf3e\ud83c\udf3e\ud83c\udf32\ud83c\udf32\ud83c\udf33   \ud83c\udf3e\ud83c\udf3e\ud83c\udf3e\ud83c\udfe1  ~",
+        "~\ud83c\udf32\ud83c\udf32\ud83c\udf33     \ud83c\udf33           \ud83d\uddfb\ud83d\uddfb   \ud83d\uddfb  \ud83c\udf32\ud83d\uddfb    \ud83c\udf32              \ud83c\udf3e\ud83c\udf3e\ud83c\udf3e\ud83c\udfd8\ufe0f\ud83c\udfe1 ~",
+        "~                                                              ~",
+        "~      \ud83c\udf32\ud83c\udf33\ud83c\udf33    \ud83c\udf33\ud83c\udf33\ud83c\udf32        \ud83d\uddfb\ud83d\uddfb\ud83d\uddfb\ud83d\uddfb     \ud83c\udf32\ud83c\udf32\ud83c\udf33         \ud83c\udf3e\ud83c\udf3e \ud83c\udf3e\ud83c\udf3e\ud83c\udfd8\ufe0f ~",
+        "~  \ud83c\udf32\ud83c\udf32\ud83c\udf33\ud83c\udf33     \ud83c\udf32\ud83c\udf32\ud83c\udf33\ud83c\udf33\ud83c\udf33     \ud83d\uddfb        \ud83c\udf33\ud83c\udf33       \ud83c\udf33\ud83c\udf33\ud83c\udf33     \ud83c\udf3e\ud83c\udfe1\ud83c\udf3e\ud83c\udfe1~",
+        "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+    ],
+    "fighting": false,
+    "IsWizardTurn": true
+}

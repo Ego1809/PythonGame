@@ -15,14 +15,6 @@ class Player:
         self.emoji = emoji
         self.level = 1
 
-    def Move(self, enemy, map):
-        direction = input("Déplacez le joueur ( S = gauche, D = droite) : ").lower()
-
-        if direction == 's' and self.x > 1:
-            self.x -= 2
-        elif direction == 'd' and self.x < len(map[0]) - 4:
-            self.x += 2
-
     def Attack(self, enemy):
         enemy.life -= self.attackPower * self.luckMultiplier
         self.luckMultiplier = 1
@@ -47,6 +39,26 @@ class Player:
     def LevelUp(self):
         self.level += 1
         self.attackPower += 5
+
+    def to_dict(self):
+        return vars(self)
+
+    @staticmethod
+    def from_dict(data):
+        player = Player(
+            x = data.get("x", 0),
+            y = data.get("y", 0),
+            life = data.get("life", 0),
+            attackPower = data.get("attackPower", 0),
+            numberOfpotion = data.get("numberOfpotion", 0),
+            healPower = data.get("healPower", 0),
+            emoji = data.get("emoji", "🧙")
+        )
+        player.maxLife = data.get("maxLife", 100)
+        player.luckMultiplier = data.get("luckMultiplier", 1)
+        player.canTrowDice = data.get("canTrowDice", True)
+        player.level = data.get("level", 1)
+        return player
     
         
         
